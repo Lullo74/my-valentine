@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Valentine ❤️</title>
+
+  <!-- React CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Georgia', serif;
+      background: linear-gradient(to bottom, #fff0f5, #ffe6ea);
+      overflow-x: hidden;
+    }
+
+    .container {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: red;
+      font-weight: bold;
+    }
+
+    .name {
+      font-style: italic;
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+
+    .message {
+      max-width: 520px;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    button {
+      padding: 12px 28px;
+      border-radius: 30px;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    button:hover { transform: scale(1.1); }
+
+    .yes { background: red; color: white; }
+    .no { background: #ccc; }
+
+    .popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+    }
+
+    .valentine-screen {
+      min-height: 100vh;
+      background: radial-gradient(circle, #ffccd5, #ff4d6d);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .heart {
+      width: 120px;
+      height: 120px;
+      background: red;
+      transform: rotate(-45deg);
+      position: relative;
+      animation: pulse 1.2s infinite;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: '';
+      width: 120px;
+      height: 120px;
+      background: red;
+      border-radius: 50%;
+      position: absolute;
+    }
+
+    .heart::before { top: -60px; }
+    .heart::after { left: 60px; }
+
+    @keyframes pulse {
+      0%,100% { transform: rotate(-45deg) scale(1); }
+      50% { transform: rotate(-45deg) scale(1.15); }
+    }
+
+    .yay {
+      margin-top: 20px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: red;
+      background: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+    }
+
+    .countdown {
+      margin-top: 15px;
+      background: rgba(255,255,255,0.9);
+      padding: 10px 20px;
+      border-radius: 20px;
+      color: #b00020;
+    }
+
+    .petal {
+      position: absolute;
+      top: -10px;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      border-radius: 50%;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to { transform: translateY(110vh); }
+    }
+
+    .music-btn {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      background: white;
+      border-radius: 50%;
+      padding: 12px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Background Music -->
+  <audio id="bgMusic" loop>
+    <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_5f0f6d2f8b.mp3" type="audio/mpeg">
+  </audio>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    function App() {
+      const [showPopup, setShowPopup] = React.useState(false);
+      const [accepted, setAccepted] = React.useState(false);
+      const [timeTogether, setTimeTogether] = React.useState("");
+      const [musicOn, setMusicOn] = React.useState(false);
+
+      const music = document.getElementById("bgMusic");
+
+      const toggleMusic = () => {
+        if (!musicOn) {
+          music.play();
+          setMusicOn(true);
+        } else {
+          music.pause();
+          setMusicOn(false);
+        }
+      };
+
+      React.useEffect(() => {
+        if (accepted) {
+          const start = new Date("2025-07-01T00:00:00");
+          setInterval(() => {
+            const now = new Date();
+            const diff = now - start;
+            const days = Math.floor(diff / 86400000);
+            const hrs = Math.floor(diff / 3600000) % 24;
+            const mins = Math.floor(diff / 60000) % 60;
+            const secs = Math.floor(diff / 1000) % 60;
+            setTimeTogether(`${days} days ${hrs}h ${mins}m ${secs}s`);
+          }, 1000);
+        }
+      }, [accepted]);
+
+      const petals = Array.from({ length: 20 });
+
+      if (accepted) {
+        return (
+          <div className="valentine-screen">
+            {petals.map((_, i) => (
+              <div className="petal" key={i}
+                style={{ left: Math.random()*100+"%", animationDuration: 5+Math.random()*5+"s" }}
+              />
+            ))}
+            <div className="heart"></div>
+            <div className="yay">YAAAAY! You're My Valentine!</div>
+            <div className="countdown">We've been together 💞<br />{timeTogether}</div>
+            <button className="music-btn" onClick={toggleMusic}>
+              {musicOn ? "🔊" : "🔇"}
+            </button>
+          </div>
+        );
+      }
+
+      return (
+        <div className="container">
+          <div>
+            <div className="name">Hlangula Dlutu</div>
+            <h1>Will You Be My Valentine?</h1>
+            <p className="message">
+              Mholo mntwam, I'm sure you thought I forgot to ask you to be my
+              Valentine's Date but I've seen how happy you've been lately, and
+              that gave me an impression that I should do something nice for you
+              and that will make me happy as well.
+              <br /><br />
+              Will you do me the honor of being my valentine and spend the rest
+              of our lives together?
+            </p>
+
+            <div className="buttons">
+              <button className="yes" onClick={() => setShowPopup(true)}>Yes</button>
+              <button className="no">No</button>
+            </div>
+
+            {showPopup && (
+              <div className="popup">
+                <div className="popup-content">
+                  <h2>Yes! I will be your Valentine! ❤️</h2>
+                  <button className="yes" onClick={() => setAccepted(true)}>Close</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
